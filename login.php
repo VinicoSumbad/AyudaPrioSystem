@@ -3,6 +3,7 @@ session_start();
 $conn = mysqli_connect("localhost","root","","ayuda_system");
 if(!$conn) die("Connection failed: ".mysqli_connect_error());
 
+/*
 // Create MSWDO/admin and barangay accounts if not exist
 $users = [
     ["mswdo","Admin_123","MSWDO",null],
@@ -18,8 +19,9 @@ $users = [
     ["suysuyan","Suysuyan_123","Barangay","Suysuyan"],
     ["tay_ac","Tay-ac_123","Barangay","Tay-ac"]
 ];
+*/
 
-foreach($users as $u){
+/*foreach($users as $u){
     $username = $u[0];
     $check = mysqli_query($conn,"SELECT id FROM users WHERE username='$username'");
     if(mysqli_num_rows($check)==0){
@@ -29,6 +31,7 @@ foreach($users as $u){
         mysqli_query($conn,"INSERT INTO users (username,password,role,barangay) VALUES ('$username','$password','$role','$barangay')");
     }
 }
+*/
 
 if(isset($_POST['login'])){
     $username = mysqli_real_escape_string($conn,$_POST['username']);

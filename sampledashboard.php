@@ -5,7 +5,7 @@ if(!$conn) die("Connection failed: ".mysqli_connect_error());
 
 // Fetch all barangays
 $barangays = [];
-$res = mysqli_query($conn,"SELECT DISTINCT barangay FROM households ORDER BY barangay ASC");
+$res = mysqli_query($conn,"SELECT DISTINCT barangay FROM users WHERE role='Barangay' ORDER BY barangay ASC");
 while($row = mysqli_fetch_assoc($res)){
     $barangays[] = $row['barangay'];
 }
@@ -28,7 +28,7 @@ if(isset($_GET['search']) && trim($_GET['search'])!=""){
     $search_query=" AND household_head LIKE '%$search%' ";
 }
 
-// Fetch households for selected barangay (MSWDO sees all, barangay sees own)
+// Fetch households for selected barangay
 if($_SESSION['role']=='MSWDO'){
     $query = "SELECT * FROM households h1 WHERE barangay='$selected_barangay' 
               AND family_size BETWEEN 1 AND 99 
@@ -47,7 +47,6 @@ if($_SESSION['role']=='MSWDO'){
               ORDER BY $order
               LIMIT 50";
 }
-
 $result = mysqli_query($conn,$query);
 
 // Fetch barangay accounts for MSWDO management
@@ -72,7 +71,7 @@ body{background:#f3f4f6;}
 select, input, button{padding:8px 12px;margin-right:10px;border-radius:6px;border:1px solid #ccc;}
 button{cursor:pointer;}
 table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;margin-top:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
-th,td{padding:12px;text-align:left;}
+th,td{padding:12px;text-align:left;vertical-align:middle;}
 th{background:#5b8def;color:white;}
 tr:nth-child(even){background:#f9fafb;}
 .label{padding:4px 10px;border-radius:20px;color:white;font-size:12px;font-weight:600;}
@@ -80,22 +79,25 @@ tr:nth-child(even){background:#f9fafb;}
 .label-orange{background:#f59e0b;}
 .label-yellow{background:#eab308;}
 .edit-btn{padding:4px 8px;background:#5b8def;color:white;border:none;border-radius:6px;cursor:pointer;}
-.reset-btn{padding:4px 8px;background:#f59e0b;color:white;border:none;border-radius:6px;cursor:pointer;}
 .delete-btn{padding:4px 8px;background:#ef4444;color:white;border:none;border-radius:6px;cursor:pointer;}
 .add-btn{padding:6px 12px;background:#22c55e;color:white;border:none;border-radius:6px;cursor:pointer;}
+.password-wrapper{position:relative; display:inline-block; width:200px;}
+.password-wrapper input.password-input{width:100%; padding-right:30px; box-sizing:border-box;}
+.eye-toggle{position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; user-select:none;}
+.action-buttons{display:flex; gap:5px;}
+.action-buttons form{margin:0;}
 </style>
 </head>
 <body>
 
 <div class="navbar">
-<div class="logo">AYUDA DASHBOARD</div>
-<nav>
-<a href="logout.php">Logout</a>
-</nav>
+    <div class="logo">AYUDA DASHBOARD</div>
+    <nav><a href="logout.php">Logout</a></nav>
 </div>
 
 <div class="container">
 
+<!-- Barangay Selection & Household Rankings -->
 <div class="card">
 <h3>Barangay Selection & Household Rankings</h3>
 <form method="GET">
@@ -150,11 +152,13 @@ while($row=mysqli_fetch_assoc($result)){
     <td><span class='label $labelClass'>".$row['priority']."</span></td>
     <td>";
     if($_SESSION['role']=='MSWDO' || $_SESSION['barangay']==$row['barangay']){
-        echo "<a href='edit_household.php?id=".$row['id']."' class='edit-btn'>Edit</a> ";
-        echo "<form method='POST' action='delete_household.php' style='display:inline;'>
-              <input type='hidden' name='id' value='".$row['id']."'>
-              <button type='submit' class='delete-btn' onclick=\"return confirm('Delete this household?');\">Delete</button>
-              </form>";
+        echo "<div class='action-buttons'>
+                <a href='edit_household.php?id=".$row['id']."' class='edit-btn'>Edit</a>
+                <form method='POST' action='delete_household.php'>
+                    <input type='hidden' name='id' value='".$row['id']."'>
+                    <button type='submit' class='delete-btn' onclick=\"return confirm('Delete this household?');\">Delete</button>
+                </form>
+              </div>";
     }
     echo "</td></tr>";
 }
@@ -162,6 +166,7 @@ while($row=mysqli_fetch_assoc($result)){
 </table>
 </div>
 
+<!-- Manage Barangay Accounts -->
 <?php if($_SESSION['role']=='MSWDO'): ?>
 <div class="card">
 <h3>Manage Barangay Accounts</h3>
@@ -176,10 +181,16 @@ while($row=mysqli_fetch_assoc($result)){
 <td><?php echo htmlspecialchars($acc['barangay']); ?></td>
 <td><?php echo htmlspecialchars($acc['username']); ?></td>
 <td>
-<form method="POST" action="reset_password.php" style="display:inline;">
-<input type="hidden" name="user_id" value="<?php echo $acc['id']; ?>">
-<input type="text" name="new_password" placeholder="New Password" value="<?php echo htmlspecialchars($acc['barangay']."_123"); ?>">
-<button type="submit" class="reset-btn">Reset</button>
+<form method="POST" action="reset_password.php" style="display:flex;align-items:center; gap:5px;">
+    <input type="hidden" name="user_id" value="<?php echo $acc['id']; ?>">
+    <div class="password-wrapper">
+        <input type="password" name="new_password"
+               id="password-<?php echo $acc['id']; ?>"
+               class="password-input"
+               placeholder="<?php echo htmlspecialchars($acc['barangay'].'_123'); ?>">
+        <span class="eye-toggle" onclick="togglePassword(<?php echo $acc['id']; ?>)">👁️</span>
+    </div>
+    <button type="submit" class="reset-btn">Reset</button>
 </form>
 </td>
 </tr>
@@ -189,5 +200,13 @@ while($row=mysqli_fetch_assoc($result)){
 <?php endif; ?>
 
 </div>
+
+<script>
+function togglePassword(id){
+    const input = document.getElementById('password-' + id);
+    input.type = (input.type === 'password') ? 'text' : 'password';
+}
+</script>
+
 </body>
 </html>

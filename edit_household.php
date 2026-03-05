@@ -18,6 +18,7 @@ if($_SESSION['role']=='MSWDO'){
     while($row=mysqli_fetch_assoc($res2)) $barangays[]=$row['barangay'];
 }
 
+// Score calculation function
 function computeScore($income,$size,$disaster,$source,$history){
     $income_score = ($income<=5000)?100:(($income<=10000)?70:(($income<=15000)?40:10));
     $size_score = ($size>=7)?100:(($size>=5)?70:(($size>=3)?40:10));
@@ -27,6 +28,7 @@ function computeScore($income,$size,$disaster,$source,$history){
     return round(0.3*$income_score + 0.2*$size_score + 0.25*$disaster_score + 0.1*$source_score + 0.15*$history_score,2);
 }
 
+// Handle update
 if(isset($_POST['update'])){
     $name = trim(mysqli_real_escape_string($conn,$_POST['name']));
     $size = (int)$_POST['size'];
@@ -41,29 +43,33 @@ if(isset($_POST['update'])){
     $errors=[];
     if($name=="") $errors[]="Name cannot be empty.";
     if($size<0 || $size>99) $errors[]="Family size must be 0-99.";
-    if($income<=2000 || $income>=100000) $errors[]="Income must be 2000-100000";
+    if($income<=2000 || $income>=100000) $errors[]="Income must be 2000-100000.";
     if($history<0 || $history>99) $errors[]="Months since last ayuda must be 0-99.";
 
     $check=mysqli_query($conn,"SELECT id FROM households WHERE LOWER(household_head)=LOWER('$name') AND id<>$id");
     if(mysqli_num_rows($check)>0) $errors[]="This household head already exists.";
 
     if(count($errors)>0){
-        echo "<script>alert('".implode('\\n',$errors)."');window.history.back();</script>"; exit();
+        echo "<script>alert('".implode('\\n',$errors)."');window.history.back();</script>"; 
+        exit();
     }
 
     $score = computeScore($income,$size,$disaster,$source,$history);
     $priority = ($score>=70)?"High":(($score>=50)?"Medium":"Low");
 
-    mysqli_query($conn,"UPDATE households SET household_head='$name',family_size='$size',income='$income',
-                      disaster_impact='$disaster',income_source='$source',assistance_history='$history',
-                      score='$score',priority='$priority',barangay='$barangay' WHERE id=$id");
+    mysqli_query($conn,"UPDATE households SET household_head='$name', family_size='$size', income='$income',
+                      disaster_impact='$disaster', income_source='$source', assistance_history='$history',
+                      score='$score', priority='$priority', barangay='$barangay' WHERE id=$id");
 
-    header("Location: sampledashboard.php"); exit();
+    header("Location: sampledashboard.php?barangay=" . urlencode($barangay)); 
+    exit();
 }
 
+// Handle delete
 if(isset($_POST['delete']) && $_SESSION['role']=='MSWDO'){
     mysqli_query($conn,"DELETE FROM households WHERE id=$id");
-    header("Location: sampledashboard.php"); exit();
+    header("Location: sampledashboard.php?barangay=" . urlencode($data['barangay'])); 
+    exit();
 }
 ?>
 
@@ -79,17 +85,17 @@ input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px s
     display:flex;
     gap:10px;
     margin-top:12px;
+    justify-content:flex-start;
 }
 .button-group button{
     flex:1;
-    padding:10px;
+    padding:10px 0;
     font-size:14px;
     border:none;
     border-radius:6px;
     cursor:pointer;
     color:white;
     font-weight:600;
-    width:auto; /* important to prevent full-width override */
 }
 .edit-btn{background:#5b8def;}
 .delete-btn{background:#ef4444;}
