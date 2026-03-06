@@ -1,0 +1,4 @@
+body{background:#f3f4f6;font-family:'Segoe UI';margin:0;}
+.container{max-width:500px;margin:50px auto;background:white;padding:30px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
+input,select,button{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;}
+button{background:#22c55e;color:white;border:none;cursor:pointer;font-weight:600;}

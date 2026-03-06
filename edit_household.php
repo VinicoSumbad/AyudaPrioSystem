@@ -77,29 +77,7 @@ if(isset($_POST['delete']) && $_SESSION['role']=='MSWDO'){
 <html>
 <head>
 <title>Edit Household</title>
-<style>
-body{background:#f3f4f6;font-family:'Segoe UI';margin:0;}
-.container{max-width:500px;margin:50px auto;background:white;padding:30px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
-input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;}
-.button-group{
-    display:flex;
-    gap:10px;
-    margin-top:12px;
-    justify-content:flex-start;
-}
-.button-group button{
-    flex:1;
-    padding:10px 0;
-    font-size:14px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    color:white;
-    font-weight:600;
-}
-.edit-btn{background:#5b8def;}
-.delete-btn{background:#ef4444;}
-</style>
+<link rel="stylesheet" href="css/edit_household.css">
 </head>
 <body>
 <div class="container">
@@ -137,8 +115,7 @@ input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px s
     <button type="submit" name="update" class="edit-btn">Update</button>
     <?php if($_SESSION['role']=='MSWDO'): ?>
     <button type="submit" name="delete" class="delete-btn" onclick="return confirm('Are you sure you want to delete this household?');">Delete</button>
-    <?php endif; ?>
-</div>
+    <?php endif; ?>a
 
 </form>
 </div>

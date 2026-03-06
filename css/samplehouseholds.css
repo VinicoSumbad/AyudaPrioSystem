@@ -1,0 +1,33 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+.navbar{  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 60px;
+  background-color: #e5e7eb;}
+.logo{font-size:14px;font-weight:500;}
+.navbar nav a{  text-decoration: none;
+  margin-left: 20px;
+  color: #333;
+  font-size: 14px;}
+.container{max-width:1200px;margin:50px auto;padding:0 20px;}
+.add-btn,.sort-btn,.search-btn{display:inline-block;padding:10px 16px;border:none;border-radius:8px;color:white;text-decoration:none;font-size:14px;}
+.add-btn{background:#22c55e;}
+.sort-btn{background:#3b82f6;margin-left:10px;}
+.search-btn{background:#f59e0b;margin-left:10px;}
+.search-input{padding:10px 12px;border-radius:6px;border:1px solid #ccc;font-size:14px;width:200px;margin-left:10px;}
+table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;margin-top:20px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
+th,td{padding:14px 12px;text-align:left;}
+th{background:#5b8def;color:white;}
+tr:nth-child(even){background:#f9fafb;}
+.label{padding:5px 12px;border-radius:20px;color:white;font-size:12px;font-weight:600;}
+.label-red{background:#ef4444;}
+.label-orange{background:#f59e0b;}
+.label-yellow{background:#eab308;}
+.edit-btn{padding:5px 10px;background:#5b8def;color:white;border:none;border-radius:6px;cursor:pointer;}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;}
+.left-side{display:flex;align-items:center;gap:20px;}

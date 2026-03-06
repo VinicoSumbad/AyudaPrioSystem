@@ -27,6 +27,6 @@ if(isset($_POST['id'])){
         die("Household not found.");
     }
 } else {
-    die("Invalid request.");
+    die("Invalid request.");a
 }
 ?>

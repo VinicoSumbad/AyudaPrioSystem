@@ -29,7 +29,7 @@
 
     <div class="hero-right">
       <div class="image-card">
-        <img src="assets/bg1.jpg" alt="Ayuda Illustration">
+        <img src="assets/image.png" alt="Ayuda Illustration">
       </div>
     </div>
   </section>
